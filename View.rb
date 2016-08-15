@@ -1,3 +1,5 @@
+require './TextGraphic'
+
 class View
   
   ADD_ENTRY=1
@@ -13,12 +15,13 @@ class View
 
   def initialize 
     puts "Thanks for using Phone Book Application\nwritten by Keyvan Gharouni Saffar"
+    @textgraphic = TextGraphic.new
+  
   end
 
-  def whatActInitial?
-    puts "What would you like to do?"
-    puts "1. Add entry 2. See Entries 3. Quit"
-    puts "Please enter the number corresponding to your request"
+  def whatActInitial? dir
+    @textgraphic.directory(dir)
+    @textgraphic.options(["Add entry","See Entries","Quit"],[1,2,3])
     action = gets.to_i
     if action==ADD_ENTRY
       return :addEntry
@@ -31,9 +34,9 @@ class View
     end
   end
 
-  def addEntry
-    puts "From the following options, please enter the number corresponding to your requats"
-    puts "1. Add new entry 2. Update entry 3. Cancel"
+  def addEntry dir
+    @textgraphic.directory(dir)
+    @textgraphic.options(["Add New Entry","Update Entry","Cancel"],[1,2,3])
     step1 = gets.to_i
     if step1==ADD_NEW_ENTRY
       return :addNewEntry
@@ -46,9 +49,9 @@ class View
     end
   end
 
-  def seeEntry
-    puts "From the following options, please enter the number corresponding to your requats"
-    puts "1. See all entries 2. See single entry 3. Cancel"
+  def seeEntry dir
+    @textgraphic.directory(dir)
+    @textgraphic.options(["See All Entries","See Single Entry","Cancel"],[1,2,3])
     step2 = gets.to_i
     if step2==SEE_ALL
       return :seeAll
@@ -61,8 +64,9 @@ class View
     end
   end
 
-  def email?
-    puts "Do you want to add emial address? (Y/N)"
+  def email? dir
+    @textgraphic.directory(dir)
+    @textgraphic.options(["Yes","No"],["Y","N"])
     email = gets
     if ['y','Y'].include? email[0]
       return true
@@ -71,8 +75,9 @@ class View
     end
   end
 
-  def number?
-    puts "Do you want to add phone number? (Y/N)"
+  def number? dir
+    @textgraphic.directory(dir)
+    @textgraphic.options(["Yes","No"],["Y","N"])
     number = gets
     if ['y','Y'].include? number[0]
       return true
@@ -81,35 +86,47 @@ class View
     end
   end
 
-  def getContactName
-    puts 'Enter Name'
+  def getContactName dir
+    #puts 'Enter Name'
+    @textgraphic.directory(dir)
+    print "\u2192 "
     name=gets.strip
     #number=gets.strip
     return {name: name} #, number: number}
   end
 
-  def getContactNumber
-    puts 'Enter Number or press 1 to cancel'
+  def getContactNumber dir
+    @textgraphic.directory(dir)
+    @textgraphic.error('Put a space after country code')
+    print "\u2192 "
     number=gets.strip
     #number=gets.strip
     return {number: number} #, number: number}
   end
 
-  def getContactEmail
-    puts 'Enter Email or press 1 to cancel'
+  def getContactEmail dir
+    @textgraphic.directory(dir)
+    print "\u2192 "
     email=gets.strip
     #number=gets.strip
     return {email: email} #, number: number}
   end
 
-  def show contactsInfo
-    contactsInfo.each{|j| 
-    print "#{j[:name]} #{j[:number]} #{j[:email]}\n"
+  def show contactsInfo,dir
+    cnt = 0
+    @textgraphic.directory(dir)
+    contactsInfo.each{|j|
+    cnt += 1  
+    print "\n #{cnt}) #{j[:name]} #{j[:number]} #{j[:email]}\n"
     }
   end
 
   def dontExist
-    puts 'the contact you are searching for does not exist'
+    @textgraphic.error('the contact you are searching for does not exist')
+  end
+
+  def invalid
+    @textgraphic.error('Invalid Request')
   end
 
 end
